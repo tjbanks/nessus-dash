@@ -1,11 +1,6 @@
-# tedivm's flask starter app
+# Omniana
 
-![Screenshot](https://github.com/twintechlabs/flaskdash/blob/master/app/static/images/screenshot.png)
-
-This code base serves as starting point for writing your next Flask application.
-
-This package is designed to allow developers to start working on their specific features immediately while also making it simple to deploy the project into production. It contains a number of configured extensions and libraries as well as unique features specifically built for this package. It also is completely dockerized, with both a docker-compose testenv and the ability to easily make images off of the application for pushing into production.
-
+A cybersecurity web dashboard.
 
 ## Code characteristics
 
@@ -146,13 +141,157 @@ You can make use of the following users:
     make run_tests
 
 
-
 ## Acknowledgements
 
 <!-- Please consider leaving this line. Thank you -->
 [Flask-Dash](https://github.com/twintechlabs/flaskdash) was used as a starting point for this code repository. That project was based off of the [Flask-User-starter-app](https://github.com/lingthio/Flask-User-starter-app).
 
-## Authors
+## tedivm-flask Authors
 - Robert Hafner (tedivms-flask) -- tedivm@tedivm.com
 - Matt Hogan (flaskdash) -- matt AT twintechlabs DOT io
 - Ling Thio (flask-user) -- ling.thio AT gmail DOT com
+
+
+## Running from scratch
+1. Install Ubuntu 18.04
+
+```
+https://ubuntu.com/download/desktop
+
+```
+
+2. In Ubuntu - run the following
+```
+sudo apt update
+sudo apt install build-essential git 
+```
+
+3. Install Docker 
+
+(https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-ubuntu-18-04 )
+
+```
+sudo apt install apt-transport-https ca-certificates curl software-properties-common
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable"
+sudo apt update
+apt-cache policy docker-ce
+sudo apt install docker-ce
+sudo systemctl enable docker
+```
+
+4. Executing the Docker Command Without Sudo 
+
+```
+sudo usermod -aG docker ${USER}
+su - ${USER}
+id -nG
+```
+
+5. Install docker-compose 
+
+( https://linuxize.com/post/how-to-install-and-use-docker-compose-on-ubuntu-18-04/ )
+
+```
+sudo curl -L "https://github.com/docker/compose/releases/download/1.23.1/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+sudo chmod +x /usr/local/bin/docker-compose
+sudo reboot
+```
+
+5. Install Anaconda for local testing (optional) 
+
+( https://www.digitalocean.com/community/tutorials/how-to-install-anaconda-on-ubuntu-18-04-quickstart )
+
+Visit https://www.anaconda.com/distribution/#linux for the link to the correct installation file
+
+```
+curl -O https://repo.anaconda.com/archive/Anaconda3-2020.02-Linux-x86_64.sh
+```
+
+6. Run Application
+
+Clone the code repository into `~/dev/omniana`
+```
+mkdir -p ~/dev
+cd ~/dev
+git clone https://github.com/tjbanks/omniana omniana
+cd omniana
+```
+
+For the first run, and only the first run, we need to create the first round of SQLAlchemy models.
+```
+make init_db
+```
+
+Create the 'my_app' virtual environment and start docker containers
+```
+make testenv
+```
+Base appplication from template:
+https://github.com/tedivm/tedivms-flask
+
+## Adding views for new pages:
+
+1. In `app/views` add a new python file for the view, eg: `nessus_views`
+2. Add the following or similar
+
+```
+from flask import Blueprint, redirect, render_template, current_app, abort
+from flask import request, url_for, flash, send_from_directory, jsonify, render_template_string
+from flask_user import current_user, login_required, roles_accepted
+
+from app import db
+from app.models.user_models import UserProfileForm, User, UsersRoles, Role
+from app.utils.forms import ConfirmationForm
+import uuid, json, os
+import datetime
+
+# When using a Flask app factory we must use a blueprint to avoid needing 'app' for '@app.route'
+nessus_blueprint = Blueprint('nessus', __name__, template_folder='templates')
+
+# The User page is accessible to authenticated users (users that have logged in)
+@nessus_blueprint.route('/nessus')
+def main_page():
+    if not current_user.is_authenticated:
+        return redirect(url_for('user.login'))
+    return render_template('pages/nessus/nessus_base.html')
+```
+
+3. Add a new template folder for your pages in `app/templates/pages` eg: `app/templates/pages/nessus`
+4. Create a new html file referenced in your prior blueprint view file
+
+5. Register your blueprint in `app/__init__.py` line ~`140`
+
+```
+from app.views.nessus_views import nessus_blueprint
+app.register_blueprint(nessus_blueprint)
+```	
+
+## Icons
+
+https://simplelineicons.github.io/#
+
+## Using multiple databases
+
+Define a bind in `settings.py` for `SQLALCHEMY_BINDS`
+```
+SQLALCHEMY_BINDS = {
+    'db2': 'sqlite:///nessus.sqlite'
+}
+```
+
+Access the engine by running:
+
+```
+from app import db
+engine = db.get_engine('db2')
+```
+
+When defining a model, specify the bind:
+```
+# Define the Role data model
+class Role(db.Model):
+    __tablename__ = 'roles'
+    __bind_key__ = 'db1'
+    ...
+```

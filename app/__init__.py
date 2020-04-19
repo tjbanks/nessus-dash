@@ -148,6 +148,10 @@ def create_app(extra_config_settings={}):
 
     from app.views.apis import api_blueprint
     app.register_blueprint(api_blueprint)
+
+    from app.views.nessus_views import nessus_blueprint
+    app.register_blueprint(nessus_blueprint)
+    
     csrf_protect.exempt(api_blueprint)
 
 

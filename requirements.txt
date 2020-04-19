@@ -29,3 +29,7 @@ requests==2.23.0
 
 # Development tools
 # tox==3.5.2
+
+# Data Science
+pandas==0.25.3
+plotly==4.6.0

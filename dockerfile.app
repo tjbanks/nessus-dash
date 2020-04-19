@@ -30,3 +30,4 @@ ADD ./migrations/ /app/migrations
 ADD ./app/ /app/app
 ADD ./manage.py /app/manage.py
 ADD ./unicorn.py /app/unicorn.py
+ADD ./data/ /app/data

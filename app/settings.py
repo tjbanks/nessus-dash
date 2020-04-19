@@ -5,9 +5,9 @@
 import os
 
 # Application settings
-APP_NAME = "Flask Starter"
+APP_NAME = "Omniana"
 APP_SYSTEM_ERROR_SUBJECT_LINE = APP_NAME + " system error"
-APP_OWNER_NAME = "Change this in settings."
+APP_OWNER_NAME = "Tyler Banks"
 
 # Flask settings
 CSRF_ENABLED = True
@@ -17,8 +17,13 @@ SECRET_KEY = None
 SQLALCHEMY_TRACK_MODIFICATIONS = False
 SQLALCHEMY_DATABASE_URI = 'sqlite:///app.sqlite'
 
+NESSUS_SQLALCHEMY_BINDS = 'nessus_db'
+SQLALCHEMY_BINDS = {
+    NESSUS_SQLALCHEMY_BINDS: 'sqlite:///data/nessus.sqlite'
+}
+
 # Celery Configuration
-CELERY_BROKER = False
+CELERY_BROKER = True
 CELERY_RESULTS = False
 
 # Cache
@@ -72,3 +77,14 @@ MAIL_DEFAULT_SENDER = '"You" <you@gmail.com>'
 ADMINS = [
     '"Admin One" <admin1@gmail.com>',
     ]
+
+
+# OMNIANA AND NESSUS CONFIG
+NESSUS_SERVER = False
+NESSUS_USERNAME = False
+NESSUS_PASSWORD = False
+NESSUS_FOLDER_EXCLUDE = ["Trash"]
+NESSUS_SCAN_EXCLUDE = ["Sample Scan"]
+
+OMNIANA_NESSUS_TABLE = 'Vulnerabilities'
+OMNIANA_HISTORY_TABLE = 'History'
