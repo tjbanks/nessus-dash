@@ -1,5 +1,5 @@
 from flask import Blueprint, redirect, render_template, current_app, abort
-from flask import request, url_for, flash, send_from_directory, jsonify, render_template_string
+from flask import request, url_for, flash, send_from_directory, jsonify, render_template_string, make_response
 from flask_user import current_user, login_required, roles_accepted
 
 from app import db
@@ -38,6 +38,17 @@ def breakdown_page():
     if not current_user.is_authenticated:
         return redirect(url_for('user.login'))
     return render_template('pages/nessus/nessus_breakdown.html')
+
+@nessus_blueprint.route('/nessus-breakdown-data')
+def breakdown_data():
+    if not current_user.is_authenticated:
+        return redirect(url_for('user.login'))
+    df = Plots.get_latest_vulnerabilities_data()
+    # 'CVE', 'CVSS', 'Risk', 'Host', 'Protocol', 'Port', 'Name', 'Synopsis',
+    # 'Description', 'Solution', 'See Also', 'Scan',
+    # 'Plugin Publication Date'
+    df = df[['CVE','CVSS','Risk','Host','Synopsis','Scan']]
+    return make_response(df.to_json(orient="records"))
 
 # The Admin page is accessible to users with the 'admin' role
 @nessus_blueprint.route('/nessus-admin')

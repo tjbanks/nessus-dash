@@ -12,6 +12,48 @@ import time
 import plotly.graph_objs as go 
 
 class Plots:
+    
+    @staticmethod
+    def get_latest_vulnerabilities_data(engine=None):
+        """
+        Return a dataframe of the latest vulnerabilities
+        """
+
+        query = """
+        SELECT 
+        CVE,
+        CVSS,
+        Risk,
+        Host,
+        Protocol,
+        Port,
+        Name,
+        Synopsis,
+        Description,
+        Solution,
+        `See Also`,
+        scan_name as Scan,
+        `Plugin Publication Date` 
+        FROM Vulnerabilities 
+        LEFT JOIN 
+            (SELECT 
+            scan_id,
+            MAX(history_date) as latest 
+            FROM Vulnerabilities 
+            GROUP BY scan_id) as dates 
+        ON dates.scan_id = Vulnerabilities.scan_id 
+        WHERE Vulnerabilities.history_date = dates.latest
+        """
+
+        if engine is None:
+            bind = current_app.config['NESSUS_SQLALCHEMY_BINDS']
+            database = db.get_engine(bind=bind)
+        else:
+            database = engine
+        df = pd.read_sql_query(query,database)
+
+        return df
+
     @staticmethod
     def get_figure_overall_vuln_trend(engine=None):
         """
@@ -240,6 +282,10 @@ class Batch:
         df['scan_name'] = scan_name
         df['history_id'] = history_id
         df['history_date'] = history_date
+
+        # drop all 'info' - None columns
+        df = df[df.Risk != 'None']
+        df = df[df.Risk != None]
 
         return df
     @staticmethod
