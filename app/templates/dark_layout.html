@@ -23,6 +23,8 @@
         <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js" integrity="sha384-rgWRqC0OFPisxlUvl332tiM/qmaNxnlY46eksSZD84t+s2vZlqGeHrncwIRX7CGp" crossorigin="anonymous"></script>
 
         <script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.0.2/pace.js" integrity="sha256-nB5IzxtznpdsVh/iELG3YdRF71rcxuh4tItH2jWfg/w=" crossorigin="anonymous"></script>
+	    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+	{% block scripts %}{% endblock %}
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.perfect-scrollbar/1.4.0/css/perfect-scrollbar.css" integrity="sha256-e2UIyejgTejr/sXeLOHEMDvEagonkoPv9+JIwckAqRs=" crossorigin="anonymous" />
 
         <link href="{{ url_for('static', filename='/coreui/dist/css/coreui.css') }}" rel="stylesheet">
@@ -157,6 +159,7 @@
         </div>
         <footer class="app-footer">
           <div>{{ config['APP_NAME'] }} &copy; {{ now().year }} {{ config['APP_OWNER_NAME'] }}</div>
+	  {% block footer %}{% endblock %}
         </footer>
       </div>
         <script>
@@ -170,4 +173,5 @@
             {% block page_load_javascript %}{% endblock %}
         </script>
     </body>
+    {% block post_body %}{% endblock %}
 </html>

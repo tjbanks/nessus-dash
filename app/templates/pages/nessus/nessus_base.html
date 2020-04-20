@@ -18,8 +18,11 @@
   </div>
 </div>
 
-<footer>
-  <script type="text/javascript">
+{% endblock %}
+
+
+{% block footer%}
+<script type="text/javascript">
     var figures = {{figuresJSON | safe}};
     var ids = {{ids | safe}};
     for(var i in figures){
@@ -28,6 +31,4 @@
         figures[i].layout || {});
     }
   </script>
-</footer>
-
 {% endblock %}
