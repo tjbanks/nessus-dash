@@ -19,7 +19,7 @@ nessus_blueprint = Blueprint('nessus', __name__, template_folder='templates')
 def main_page():
     if not current_user.is_authenticated:
         return redirect(url_for('user.login'))
-    """
+    
     figures = []
     vuln_trend_overall = Plots.get_figure_overall_vuln_trend()
     vuln_trend_plugin = Plots.get_figure_plugin_vuln_trend()
@@ -29,9 +29,15 @@ def main_page():
     ids = ['figure-{}'.format(i) for i,_ in enumerate(figures)]
 
     figuresJSON = json.dumps(figures,cls=plotly.utils.PlotlyJSONEncoder)
-    return render_template('index.html', ids=ids, figuresJSON=figuresJSON)
-    """
-    return render_template('pages/nessus/nessus_base.html')
+    #return render_template('index.html', ids=ids, figuresJSON=figuresJSON)
+    
+    return render_template('pages/nessus/nessus_base.html',ids=ids, figuresJSON=figuresJSON)
+
+@nessus_blueprint.route('/nessus-breakdown')
+def breakdown_page():
+    if not current_user.is_authenticated:
+        return redirect(url_for('user.login'))
+    return render_template('pages/nessus/nessus_breakdown.html')
 
 # The Admin page is accessible to users with the 'admin' role
 @nessus_blueprint.route('/nessus-admin')

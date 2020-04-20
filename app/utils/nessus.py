@@ -13,7 +13,7 @@ import plotly.graph_objs as go
 
 class Plots:
     @staticmethod
-    def get_figure_overall_vuln_trend():
+    def get_figure_overall_vuln_trend(engine=None):
         """
         Return the parameters for plotly plot
         for the overall vulnerability trend
@@ -32,10 +32,10 @@ class Plots:
         
         title = "Server CVE Count Trend"
 
-        return Plots.vuln_trend(query,title)
+        return Plots.vuln_trend(query,title,engine=engine)
 
     @staticmethod
-    def get_figure_plugin_vuln_trend():
+    def get_figure_plugin_vuln_trend(engine=None):
         """
         Return the parameters for plotly plot
         for the overall vulnerability trend
@@ -62,16 +62,19 @@ class Plots:
 
         title = "Server Plugin Count Trend"
 
-        return Plots.vuln_trend(query,title)
+        return Plots.vuln_trend(query,title,engine=engine)
 
     @staticmethod
-    def vuln_trend(query,title):
+    def vuln_trend(query,title,engine=None):
         """
         Returns:
         figure: plotly object
         """
-        bind = current_app.config['NESSUS_SQLALCHEMY_BINDS']
-        database = db.get_engine(binds=bind)
+        if engine is None:
+            bind = current_app.config['NESSUS_SQLALCHEMY_BINDS']
+            database = db.get_engine(bind=bind)
+        else:
+            database = engine
         df = pd.read_sql_query(query,database)
         df['Date'] = pd.to_datetime(df['history_date'],unit='s') - pd.to_timedelta(7, unit='d')
         df_weekly = df.groupby(['Risk', pd.Grouper(key='Date', freq='W-MON')])['count'].sum().reset_index().sort_values('Date')
@@ -125,7 +128,10 @@ class Plots:
 
 class Batch:
     @staticmethod
-    def run_batch(csv_path='./data/', database=None,remove_csv=False):
+    def run_batch(csv_path='./data/', database=None,remove_csv=False, engine=None,
+        nessus_server=None, nessus_username=None, nessus_password=None,
+        nessus_folder_exclude=None, nessus_scan_exclude=None, nessus_table=None,
+        nessus_history_table=None):
         """
         ETL Pipeline -
         Extract - data from Nessus API
@@ -137,21 +143,46 @@ class Batch:
         csv_path (str): location to save temporary csvs
         remove_csv (bool): delete temporary csv files once they're loaded into db
         """
+        if not nessus_server:
+            server = current_app.config['NESSUS_SERVER']
+        else:
+            server = nessus_server
 
-        server = current_app.config['NESSUS_SERVER']
-        username = current_app.config['NESSUS_USERNAME']
-        password = current_app.config['NESSUS_PASSWORD']
+        if not nessus_username:
+            username = current_app.config['NESSUS_USERNAME']
+        else:
+            username = nessus_username
+        
+        if not nessus_password:
+            password = current_app.config['NESSUS_PASSWORD']
+        else:
+            password = nessus_password
 
-        folder_exclude = current_app.config['NESSUS_FOLDER_EXCLUDE']
-        scan_exclude = current_app.config['NESSUS_SCAN_EXCLUDE']
-                
-        table = current_app.config['OMNIANA_NESSUS_TABLE']
-        history_table = current_app.config['OMNIANA_HISTORY_TABLE']
+        if not nessus_folder_exclude:
+            folder_exclude = current_app.config['NESSUS_FOLDER_EXCLUDE']
+        else:
+            folder_exclude = nessus_folder_exclude
+        
+        if not nessus_scan_exclude:
+            scan_exclude = current_app.config['NESSUS_SCAN_EXCLUDE']
+        else:
+            scan_exclude = nessus_scan_exclude
 
-        if not database:
-            database = current_app.config['NESSUS_SQLALCHEMY_BINDS']
-        #engine = create_engine('sqlite:///'+database, echo=False)
-        engine = db.get_engine(binds=database)
+        if not nessus_table:
+            table = current_app.config['OMNIANA_NESSUS_TABLE']
+        else:
+            table = nessus_table
+
+        if not nessus_history_table:
+            history_table = current_app.config['OMNIANA_HISTORY_TABLE']
+        else:
+            history_table = nessus_history_table
+
+        if not engine:
+            if not database:
+                database = current_app.config['NESSUS_SQLALCHEMY_BINDS']
+            #engine = create_engine('sqlite:///'+database, echo=False)
+            engine = db.get_engine(bind=database)
 
         history_df = pd.DataFrame(columns=['history_id'])
         # history table check

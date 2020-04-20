@@ -114,3 +114,6 @@ ENV/
 # --------------------------------
 
 app.sqlite
+
+data/
+app/settings.py

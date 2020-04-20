@@ -284,7 +284,7 @@ Access the engine by running:
 
 ```
 from app import db
-engine = db.get_engine('db2')
+engine = db.get_engine(bind='db2')
 ```
 
 When defining a model, specify the bind:
