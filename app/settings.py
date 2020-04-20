@@ -18,8 +18,9 @@ SQLALCHEMY_TRACK_MODIFICATIONS = False
 SQLALCHEMY_DATABASE_URI = 'sqlite:///app.sqlite'
 
 NESSUS_SQLALCHEMY_BINDS = 'nessus_db'
+NESSUS_SQLALCHEMY_PATH = 'data/nessus.sqlite'
 SQLALCHEMY_BINDS = {
-    NESSUS_SQLALCHEMY_BINDS: 'sqlite:///data/nessus.sqlite'
+    NESSUS_SQLALCHEMY_BINDS: 'sqlite:///' + NESSUS_SQLALCHEMY_PATH
 }
 
 # Celery Configuration
