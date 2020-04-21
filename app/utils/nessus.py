@@ -32,6 +32,7 @@ class Plots:
         Synopsis,
         Description,
         Solution,
+        `Plugin Output`,
         `See Also`,
         scan_name as Scan,
         `Plugin Publication Date`,

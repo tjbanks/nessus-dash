@@ -33,7 +33,7 @@ def main_page():
     df = Plots.get_latest_vulnerabilities_data()
     # 'Plugin ID', 'CVE', 'CVSS', 'Risk', 'Host', 'Protocol', 'Port', 'Name', 'Synopsis',
     # 'Description', 'Solution', 'See Also', 'Scan',
-    # 'Plugin Publication Date',Metasploit, Core Impact, CANVAS
+    # 'Plugin Publication Date',Metasploit, Core Impact, CANVAS,'Plugin Output'
     df = df.sort_values('Risk').drop_duplicates(subset=['Plugin ID','Host'],keep='first')
     vulns = df.groupby('Risk').count()['Plugin ID'].tolist()
     vulns = [vulns[i] for i in [0,1,3,2]] #reorder
@@ -98,7 +98,7 @@ def breakdown_plugin_data():
         df = df[(df['Plugin Publication Date']<date)]
 
     df['Exploitable'] = (df['Metasploit']==True) | (df['Core Impact']==True) |(df['CANVAS']==True)
-    df = df[['Plugin ID','CVSS','Risk','Host','Synopsis','Solution','Scan','Plugin Publication Date','Exploitable']]
+    df = df[['Plugin ID','CVSS','Risk','Host','Synopsis','Solution','Plugin Output','Scan','Plugin Publication Date','Exploitable']]
 
     return make_response(df.to_json(orient="records"))
 

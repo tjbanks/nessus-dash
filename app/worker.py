@@ -13,7 +13,7 @@ def setup_periodic_tasks(sender, **kwargs):
     #sender.add_periodic_task(10.0, nessus_update.s(), name='add every 10')
     sender.add_periodic_task(
         crontab(hour='*', minute=30, day_of_week='*'),
-        nessus_update.s(),
+        nessus_update.s()
     )
 
 @celery.task
