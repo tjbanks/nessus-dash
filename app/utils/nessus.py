@@ -34,7 +34,10 @@ class Plots:
         Solution,
         `See Also`,
         scan_name as Scan,
-        `Plugin Publication Date` 
+        `Plugin Publication Date`,
+        Metasploit, 
+        `Core Impact`, 
+        CANVAS
         FROM Vulnerabilities 
         LEFT JOIN 
             (SELECT 
@@ -143,13 +146,13 @@ class Plots:
             if risk not in ignored_risks:
                 df_temp = pd.DataFrame(df[df['Risk']==risk]
                     .groupby(['scan_name', pd.Grouper(key='Date', freq='W-MON')])['count'].last().reset_index()).groupby('Date').sum().reset_index()
-                
+                df_temp['Date'] = df_temp['Date'] + pd.to_timedelta(6,unit='d')#End of week
                 name = risk
                 if risk == "None" or not name:
                     name = "Info"
                 trace = go.Scatter(
-                    x = df_temp['Date'].astype(str).tolist(),
-                    y = df_temp['count'].tolist(),
+                    x = df_temp['Date'].astype(str).tolist()[:-1], #Drop the last one since it's not complete
+                    y = df_temp['count'].tolist()[:-1],
                     mode = 'lines',
                     name = name,
                     line = dict(color=colors[risk]),
@@ -272,7 +275,8 @@ class Batch:
                                 history_df = history_df.append([{'history_id':history_id}])
                                 history_df.to_sql(history_table, con=engine,if_exists='replace',index=False)
                             else:
-                                print("      Skipping - already loaded into database")
+                                #print("      Skipping - already loaded into database")
+                                pass
         
         return
     @staticmethod

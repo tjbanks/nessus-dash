@@ -126,7 +126,7 @@ class Nessus:
     def update_payload_token(self, dic):
         dic['token'] = self.get_session_token()
 
-    def scans_export(self,scan_id,history_id,filename,status_interval=1,status_max=120,verbose=True):
+    def scans_export(self,scan_id,history_id,filename,status_interval=1,status_max=300,verbose=False):
         """
         Parameters:
         status_interval: Wait n seconds before checking status again

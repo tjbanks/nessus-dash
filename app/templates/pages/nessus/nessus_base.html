@@ -2,32 +2,40 @@
 
 {% block content %}
 <div class="row">
-  <h1>Nessus Vulnerabilities Executive Dashboard</h1>
+  <h1>Nessus Vulnerabilities - Executive Dashboard</h1>
 </div>
 <div class="col-12">
   <div id="charts" class="container mt-3 text-center">
       <div class="row">
 	 <div class="col-3">
 	  <div class="card text-white mb-3" style="max-width: 18rem;font-size: 200%;background-color:red; ">
-            <div class="card-header" style="background-color:red;">397</div>
+	    <a style="color:white"  href="{{ url_for('nessus.breakdown_plugin_page') }}?risk=Critical">
+            <div class="card-header" style="background-color:red;">{{vulns[0]}}</div>
+	    </a>
  	    <h5 class="card-title">Critical</h5>
   	   </div> 
 	 </div>
 	 <div class="col-3">
           <div class="card text-white mb-3" style="max-width: 18rem;font-size: 200%;background-color:orange;">
-            <div class="card-header" style="background-color:orange;">661</div>
+            <a style="color:white"  href="{{ url_for('nessus.breakdown_plugin_page') }}?risk=High">
+	    <div class="card-header" style="background-color:orange;">{{vulns[1]}}</div>
+	    </a>
             <h5 class="card-title">High</h5>
            </div>
          </div>
 	 <div class="col-3">
           <div class="card text-white mb-3" style="max-width: 18rem;font-size: 200%;background-color:yellow;color:black;">
-            <div class="card-header" style="background-color:yellow;color:black;">3290</div>
+	    <a style="color:black>"  href="{{ url_for('nessus.breakdown_plugin_page') }}?risk=Medium">
+	    <div class="card-header" style="background-color:yellow;color:black;">{{vulns[2]}}</div>
+	    </a>
             <h5 class="card-title" style="color:black">Medium</h5>
            </div>
          </div>
 	 <div class="col-3">
           <div class="card text-white mb-3" style="max-width: 18rem;font-size: 200%;background-color:green;">
-            <div class="card-header" style="background-color:green;">247</div>
+            <a style="color:white"  href="{{ url_for('nessus.breakdown_plugin_page') }}?risk=Low">
+	    <div class="card-header" style="background-color:green;">{{vulns[3]}}</div>
+	    </a>
             <h5 class="card-title">Low</h5>
            </div>
          </div>

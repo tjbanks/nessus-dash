@@ -30,8 +30,14 @@ def main_page():
 
     figuresJSON = json.dumps(figures,cls=plotly.utils.PlotlyJSONEncoder)
     #return render_template('index.html', ids=ids, figuresJSON=figuresJSON)
-    
-    return render_template('pages/nessus/nessus_base.html',ids=ids, figuresJSON=figuresJSON)
+    df = Plots.get_latest_vulnerabilities_data()
+    # 'Plugin ID', 'CVE', 'CVSS', 'Risk', 'Host', 'Protocol', 'Port', 'Name', 'Synopsis',
+    # 'Description', 'Solution', 'See Also', 'Scan',
+    # 'Plugin Publication Date',Metasploit, Core Impact, CANVAS
+    df = df.sort_values('Risk').drop_duplicates(subset=['Plugin ID','Host'],keep='first')
+    vulns = df.groupby('Risk').count()['Plugin ID'].tolist()
+    vulns = [vulns[i] for i in [0,1,3,2]] #reorder
+    return render_template('pages/nessus/nessus_base.html',ids=ids, figuresJSON=figuresJSON,vulns=vulns)
 
 @nessus_blueprint.route('/nessus-breakdown')
 def breakdown_page():
@@ -46,8 +52,9 @@ def breakdown_data():
     df = Plots.get_latest_vulnerabilities_data()
     # 'Plugin ID', 'CVE', 'CVSS', 'Risk', 'Host', 'Protocol', 'Port', 'Name', 'Synopsis',
     # 'Description', 'Solution', 'See Also', 'Scan',
-    # 'Plugin Publication Date'
-    df = df[['Plugin ID','CVE','CVSS','Risk','Host','Synopsis','Scan','Plugin Publication Date']]
+    # 'Plugin Publication Date',Metasploit, Core Impact, CANVAS
+    df['Exploitable'] = (df['Metasploit']==True) | (df['Core Impact']==True) |(df['CANVAS']==True)
+    df = df[['Plugin ID','CVE','CVSS','Risk','Host','Synopsis','Scan','Plugin Publication Date','Exploitable']]
     return make_response(df.to_json(orient="records"))
 
 @nessus_blueprint.route('/nessus-breakdown-plugin')
@@ -64,14 +71,20 @@ def breakdown_plugin_data():
     df = Plots.get_latest_vulnerabilities_data()
     # 'Plugin ID', 'CVE', 'CVSS', 'Risk', 'Host', 'Protocol', 'Port', 'Name', 'Synopsis',
     # 'Description', 'Solution', 'See Also', 'Scan',
-    # 'Plugin Publication Date'
-    df = df.sort_values('Risk').drop_duplicates(subset=['Plugin ID','Host'],keep='first')
+    # 'Plugin Publication Date',Metasploit, Core Impact, CANVAS
+    #df = df.sort_values('Risk').drop_duplicates(subset=['Plugin ID','Host'],keep='first')
     #df = df[['Plugin ID','CVSS','Risk','Host','Synopsis','Solution','Scan']]
 
     cvss = request.args.get('cvss', default = -1, type = int)
     risk = request.args.get('risk', default = None, type = str)
     daysold = request.args.get('daysold',default = -1, type = int)
+    exploit = request.args.get('exploit',default = 0, type = int)
 
+    if exploit != 0:
+        df = df[(df['Metasploit']==True) | (df['Core Impact']==True) |(df['CANVAS']==True)]
+        
+    df = df.sort_values('Risk').drop_duplicates(subset=['Plugin ID','Host'],keep='first')
+    
     if cvss != -1 and cvss>0 and cvss<=10:
         df = df[df.CVSS >= cvss]
     if risk:
@@ -84,7 +97,8 @@ def breakdown_plugin_data():
         date = new_date.strftime("%Y/%m/%d")
         df = df[(df['Plugin Publication Date']<date)]
 
-    df = df[['Plugin ID','CVSS','Risk','Host','Synopsis','Solution','Scan','Plugin Publication Date']]
+    df['Exploitable'] = (df['Metasploit']==True) | (df['Core Impact']==True) |(df['CANVAS']==True)
+    df = df[['Plugin ID','CVSS','Risk','Host','Synopsis','Solution','Scan','Plugin Publication Date','Exploitable']]
 
     return make_response(df.to_json(orient="records"))
 
