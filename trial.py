@@ -7,6 +7,6 @@ nessus_history_table = settings.OMNIANA_HISTORY_TABLE
 
 database = settings.NESSUS_SQLALCHEMY_PATH
 
-engine = create_engine('sqlite:///'+database, echo=False)
+engine = create_engine("sqlite:///"+database, echo=False)
 
 import pdb;pdb.set_trace()

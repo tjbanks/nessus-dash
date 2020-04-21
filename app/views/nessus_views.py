@@ -7,7 +7,7 @@ from app.models.user_models import UserProfileForm, User, UsersRoles, Role
 from app.utils.forms import ConfirmationForm
 from app.utils.nessus import Plots
 import uuid, json, os
-import datetime
+from datetime import datetime,timedelta
 
 import plotly
 
@@ -44,11 +44,50 @@ def breakdown_data():
     if not current_user.is_authenticated:
         return redirect(url_for('user.login'))
     df = Plots.get_latest_vulnerabilities_data()
-    # 'CVE', 'CVSS', 'Risk', 'Host', 'Protocol', 'Port', 'Name', 'Synopsis',
+    # 'Plugin ID', 'CVE', 'CVSS', 'Risk', 'Host', 'Protocol', 'Port', 'Name', 'Synopsis',
     # 'Description', 'Solution', 'See Also', 'Scan',
     # 'Plugin Publication Date'
-    df = df[['CVE','CVSS','Risk','Host','Synopsis','Scan']]
+    df = df[['Plugin ID','CVE','CVSS','Risk','Host','Synopsis','Scan','Plugin Publication Date']]
     return make_response(df.to_json(orient="records"))
+
+@nessus_blueprint.route('/nessus-breakdown-plugin')
+def breakdown_plugin_page():
+    if not current_user.is_authenticated:
+        return redirect(url_for('user.login'))
+
+    return render_template('pages/nessus/nessus_breakdown_plugin.html')
+
+@nessus_blueprint.route('/nessus-breakdown-plugin-data')
+def breakdown_plugin_data():
+    if not current_user.is_authenticated:
+        return redirect(url_for('user.login'))
+    df = Plots.get_latest_vulnerabilities_data()
+    # 'Plugin ID', 'CVE', 'CVSS', 'Risk', 'Host', 'Protocol', 'Port', 'Name', 'Synopsis',
+    # 'Description', 'Solution', 'See Also', 'Scan',
+    # 'Plugin Publication Date'
+    df = df.sort_values('Risk').drop_duplicates(subset=['Plugin ID','Host'],keep='first')
+    #df = df[['Plugin ID','CVSS','Risk','Host','Synopsis','Solution','Scan']]
+
+    cvss = request.args.get('cvss', default = -1, type = int)
+    risk = request.args.get('risk', default = None, type = str)
+    daysold = request.args.get('daysold',default = -1, type = int)
+
+    if cvss != -1 and cvss>0 and cvss<=10:
+        df = df[df.CVSS >= cvss]
+    if risk:
+        risk_arr = risk.split('-')
+        #df = df[df.isin({'Risk':risk_arr})].dropna(subset=['Risk'])
+        df = df[df['Risk'].isin(risk_arr)]
+    if daysold >= 0:
+        current_date = datetime.now()
+        new_date = current_date - timedelta(days=daysold)
+        date = new_date.strftime("%Y/%m/%d")
+        df = df[(df['Plugin Publication Date']<date)]
+
+    df = df[['Plugin ID','CVSS','Risk','Host','Synopsis','Solution','Scan','Plugin Publication Date']]
+
+    return make_response(df.to_json(orient="records"))
+
 
 # The Admin page is accessible to users with the 'admin' role
 @nessus_blueprint.route('/nessus-admin')

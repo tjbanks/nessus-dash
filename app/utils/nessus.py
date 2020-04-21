@@ -20,7 +20,8 @@ class Plots:
         """
 
         query = """
-        SELECT 
+        SELECT
+        `Plugin ID`,
         CVE,
         CVSS,
         Risk,

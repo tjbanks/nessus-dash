@@ -2,20 +2,23 @@
 
 {% block content %}
 <div class="row">
-  <h1>Open CVEs Currently on the Network</h1>
+  <h1>Nessus Vulnerabilities</h1>
 </div>
 <div class="row">
-See the Plugins page for solutions.
+Vulnerabilities found here are listed by Nessus Plugin. Patching a single plugin's output may reduce several open CVEs.
+Default priority is CVSS>7, older than 30 days, Critical or High.
 </div>
+<!--    df = df[['Plugin ID','CVSS','Risk','Host','Synopsis','Solution','Scan']] -->
+
 <table id="myTable" class="table table-striped" style="width:100%" >
          <thead>
-           <tr>
+           <tr> 
 	    <th>Plugin ID</th>
-            <th>CVE</th>
 	    <th>CVSS</th>
 	    <th>Risk</th>
 	    <th>Host</th>
 	    <th>Synopsis</th>
+	    <th>Solution</th>
 	    <th>Scan</th>
 	    <th>Plugin Published</th>
           </tr>
@@ -27,7 +30,7 @@ $(document).ready(function() {
     $('#myTable').DataTable( {
         "processing": true,
 	"ajax": {
-	    "url":"/nessus-breakdown-data",
+	    "url":"/nessus-breakdown-plugin-data"+ "?" +(new URL(window.location.href).searchParams.toString()),
 	    "dataSrc":""
 	},
 	dom: 'Bfrtip',
@@ -37,14 +40,14 @@ $(document).ready(function() {
         ],
         // add column definitions to map your json to the table
         "columns": [
-	    {data: "Plugin ID"},
-            {data: "CVE"},
+            {data: "Plugin ID"},
 	    {data: "CVSS"},
 	    {data: "Risk"},
 	    {data: "Host"},
 	    {data: "Synopsis"},
+	    {data: "Solution"},
 	    {data: "Scan"},
-            {data: "Plugin Publication Date"}
+	    {data: "Plugin Publication Date"}
         ]
     } );
 });
