@@ -8,7 +8,7 @@ services:
     environment:
       - CELERY_BROKER=rabbitmq
       - SQLALCHEMY_DATABASE_URI=postgres://dbuser:dbpassword@postgres/dbname
-      - SECRET_KEY=NotSecure
+      - SECRET_KEY=NotSecureNotSecureNotSecure
       - DEBUG=true
 
 
@@ -47,6 +47,7 @@ services:
 
     ports:
       - "80:80"
+      - "443:443"
       - "5000:5000"
     volumes:
       - ./docker/app/uwsgi.ini:/app/uwsgi.ini

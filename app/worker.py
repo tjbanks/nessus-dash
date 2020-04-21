@@ -22,7 +22,7 @@ def test(arg):
 
 @celery.task
 def nessus_update():
-    Batch.run_batch()
+    Batch.run_batch(csv_path='/data/')
 
 
 with app.app_context():

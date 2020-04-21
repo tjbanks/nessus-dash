@@ -59,6 +59,7 @@ if [ ! -f ~/.hasrun ]; then
 
   if [ ! -z "$USER_USERNAME" ] && [ ! -z "$USER_EMAIL" ] && [ ! -z "$USER_PASSWORD" ]; then
     python manage.py add-user $USER_USERNAME $USER_EMAIL $USER_PASSWORD user
+    python manage.py add-user nessus nessus@como.gov nessus user
   fi
 
   touch ~/.hasrun

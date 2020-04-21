@@ -11,6 +11,7 @@ Flask-SQLAlchemy==2.4.1
 Flask-BabelEx==0.9.4
 Flask-User==1.0.2.2
 Flask-WTF==0.14.3
+Flask-SSLify==0.1.5
 
 # Automated tests
 pytest==5.4.1
@@ -33,3 +34,4 @@ requests==2.23.0
 # Data Science
 pandas==0.25.3
 plotly==4.6.0
+
