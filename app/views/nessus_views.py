@@ -96,7 +96,7 @@ def breakdown_plugin_data():
         new_date = current_date - timedelta(days=daysold)
         date = new_date.strftime("%Y/%m/%d")
         df = df[(df['Plugin Publication Date']<date)]
-
+    df['Plugin Output'] = df['Plugin Output'].str.replace('javascript:alert', 'javascript[colon]alert', regex=False)
     df['Exploitable'] = (df['Metasploit']==True) | (df['Core Impact']==True) |(df['CANVAS']==True)
     df = df[['Plugin ID','CVSS','Risk','Host','Synopsis','Solution','Plugin Output','Scan','Plugin Publication Date','Exploitable']]
 
