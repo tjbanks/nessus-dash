@@ -152,8 +152,8 @@ class Plots:
                 if risk == "None" or not name:
                     name = "Info"
                 trace = go.Scatter(
-                    x = df_temp['Date'].astype(str).tolist()[:-1], #Drop the last one since it's not complete
-                    y = df_temp['count'].tolist()[:-1],
+                    x = df_temp['Date'].astype(str).tolist()[1:-1], #Drop the last one since it's not complete
+                    y = df_temp['count'].tolist()[1:-1],
                     mode = 'lines',
                     name = name,
                     line = dict(color=colors[risk]),
