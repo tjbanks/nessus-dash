@@ -35,6 +35,7 @@ class Plots:
         `Plugin Output`,
         `See Also`,
         scan_name as Scan,
+        MSKB,
         `Plugin Publication Date`,
         Metasploit, 
         `Core Impact`, 

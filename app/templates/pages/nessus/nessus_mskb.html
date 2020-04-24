@@ -1,0 +1,59 @@
+{% extends "common/dark_base.html" %}
+
+{% block content %}
+<div class="row">
+  <h1>Unique Microsoft KBs Per Host</h1>
+</div>
+<div class="row">
+Not all KBs may apply, several KBs may be listed but only one may be applicable to the server architecture.
+</div>
+<table id="myTable" class="table table-striped" style="width:100%" >
+         <thead>
+           <tr>
+	    <th>Plugin ID</th>
+            <th>CVE</th>
+	    <th>CVSS</th>
+	    <th>Risk</th>
+	    <th>Host</th>
+	    <th>Synopsis</th>
+	    <th>Scan</th>
+	    <th>MSKB</th>
+	    <th>Plugin Published</th>
+	    <th>Exploitable</th>
+          </tr>
+        </thead>
+</table>
+<!--https://stackoverflow.com/questions/48699039/simple-datatables-flask-->
+<script>
+$(document).ready(function() {
+    $('#myTable').DataTable( {
+        "processing": true,
+	"ajax": {
+	    "url":"/nessus-mskb-data",
+	    "dataSrc":""
+	},
+	dom: 'Bfrtip',
+	buttons: [
+            'excel',
+            'pdf'
+        ],
+        // add column definitions to map your json to the table
+        "columns": [
+	    {data: "Plugin ID"},
+            {data: "CVE"},
+	    {data: "CVSS"},
+	    {data: "Risk"},
+	    {data: "Host"},
+	    {data: "Synopsis"},
+	    {data: "Scan"},
+	    {data: "MSKB"},
+            {data: "Plugin Publication Date"},
+	    {data: "Exploitable"}
+        ]
+    } );
+});
+</script>
+
+{% endblock %}
+
+df = df[['CVE','CVSS','Risk','Host','Synopsis','Scan']]
