@@ -1,4 +1,4 @@
-# Omniana
+# Nessus Dash
 
 A cybersecurity web dashboard.
 
